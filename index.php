@@ -1,10 +1,12 @@
 <?php
     $passwordLength = $_GET['passLength'] ?? 0;
 
+    var_dump($passwordLength);
+
     $warnings = [
         [
-            "condition" => !is_numeric($passwordLength),
-            "message" => "Inserisci un Numero altri caratteri non sono ammessi!"
+            "condition" => !is_numeric($passwordLength) && $passwordLength !== "",
+            "message" => "Inserisci un Numero!"
         ],
 
         [
@@ -13,17 +15,34 @@
         ],
     ];
 
-    function checkWarnings($warningArray) {
+    function CheckWarnings($warningArray) {
+        $returnCheck = false;
+
         foreach($warningArray as $warning) {
             if($warning['condition']) {
-                return true;
+                $returnCheck = true;
             }
-        }
-    };
+        };
 
-    $hasWarning = checkWarnings($warnings);
+        return $returnCheck;
+    }
 
-    $generatedPassword = null;
+    function GeneratePassword($lenght, $warnings) {
+        $retrunGenerated = "";
+
+        if(!$warnings) {   
+
+            for ($i=0; $i < $lenght; $i++) { 
+                $retrunGenerated .= chr(rand(33, 122));
+            }
+
+            return $retrunGenerated;
+        }  
+    }
+
+    $hasWarning = CheckWarnings($warnings);
+
+    $generatedPassword = GeneratePassword($passwordLength, $hasWarning);
 ?>
 
 <!DOCTYPE html>
@@ -66,12 +85,11 @@
             }
         ?>
 
-        <h2>Password Generata:</h2>
-
         <?php
-            if(!$hasWarning) {
+            if(!$hasWarning && $generatedPassword !== "") {
         ?>
-            <h4></h4>
+            <h2>Password Generata:</h2>
+            <h4> <?php echo $generatedPassword ?></h4>
         <?php
             }
         ?>
